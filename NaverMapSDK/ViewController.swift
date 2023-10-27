@@ -39,7 +39,14 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         mapView.isNightModeEnabled = true // 야간모드(다크모드) 활성화 -> navi 타입만 지원
         mapView.lightness = 0.3 // 지도 밝기 조절, 기본값 0, -1~1, 1에 가까울수록 밝아짐
 
+        var cameraUpdate = NMFCameraUpdate(scrollTo: NMGLatLng(lat: 377.5666102, lng: 126.9783881)) // 카메라 이동을 설정
+        cameraUpdate.animation = .easeIn // 카메라가 부드럽게 가속하면서 이동함. 가까운거리에 적합
+        mapView.moveCamera(cameraUpdate)
+
+
         NSLog("위도: %f, 경도: %f", coord.lat ,coord.lng) // 위경도 로그 표시
+
+        
 
         self.view.addSubview(mapView)
     }
