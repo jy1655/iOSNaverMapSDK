@@ -15,7 +15,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // 네이버 맵 API 키 설정
-        NMFAuthManager.shared().clientId = "in40o41uj2"
+        NMFAuthManager.shared().clientId = getValue(forKey: "Client_ID")
 
         return true
     }
@@ -34,6 +34,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
     }
 
+    func getValue(forKey key: String) -> String? {
+        guard let path = Bundle.main.path(forResource: "Config", ofType: "plist"),
+              let dict = NSDictionary(contentsOfFile: path) as? [String: AnyObject] else {
+            return nil
+        }
+        return dict[key] as? String
+    } // Client_ID 값을 불러오기 위한 메소드
 
 }
 

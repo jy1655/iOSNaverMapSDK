@@ -15,6 +15,9 @@ class ViewController: UIViewController, CLLocationManagerDelegate, NMFMapViewTou
     let naverMapView = NMFNaverMapView()
     let marker = NMFMarker()
 
+    var userLocation: CLLocation?
+    var tappedLocation: NMGLatLng?
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -25,7 +28,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, NMFMapViewTou
         naverMapView.mapView.touchDelegate = self // Touch 델리게이트 설정
 
         naverMapUI()
-
+        button()
 
 
     }
@@ -42,6 +45,33 @@ class ViewController: UIViewController, CLLocationManagerDelegate, NMFMapViewTou
         print("지도 로딩")
         naverMapView.mapView.positionMode = .normal // 지도 위치를 GPS위치로 설정
         print("position mode:\(naverMapView.mapView.positionMode)")
+    }
+
+
+    @objc func findWay() {
+        guard let userLocation = userLocation, let tappedLocation = tappedLocation else {
+            print("위치 정보가 없습니다.")
+            return
+        }
+
+        let start = "\(userLocation.coordinate.longitude),\(userLocation.coordinate.latitude)"
+        let goal = "\(tappedLocation.lng),\(tappedLocation.lat)"
+        let option = "trafast" // 경로 옵션, 필요한 옵션에 따라 변경 가능
+
+        let drivingAPI = DrivingAPI.shared
+        drivingAPI.driveRoute(start: start, goal: goal, option: option) { (result, error) in
+            if let error = error {
+                print("Error: \(error)")
+                return
+            }
+
+            // 결과 처리
+            if let result = result {
+                print(result)
+                // 결과에 따라 경로를 지도에 표시하는 로직 구현
+                // ...
+            }
+        }
     }
 
 
@@ -62,6 +92,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, NMFMapViewTou
 
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
             if let location = locations.last {
+                userLocation = location // 사용자 위치 저장
                 let latLng = NMGLatLng(lat: location.coordinate.latitude, lng: location.coordinate.longitude)
                 print("위도: \(latLng.lat), 경도: \(latLng.lng)")
                 // 필요한 경우 지도의 중심을 사용자의 현재 위치로 설정
@@ -72,6 +103,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate, NMFMapViewTou
 
     func mapView(_ mapView: NMFMapView, didTapMap latlng: NMGLatLng, point: CGPoint) { // 지도를 탭 했을때 좌표 파라미터 콜백
         print("\(latlng.lat), \(latlng.lng)")
+
+        tappedLocation = latlng // 탭한 위치 저장
 
         // 마커 생성 및 설정
         marker.position = latlng
@@ -115,6 +148,19 @@ class ViewController: UIViewController, CLLocationManagerDelegate, NMFMapViewTou
         self.view.addSubview(naverMapView) // naverMapView와 관련된UI 추가
     }
 
+
+    func button() {
+        let button = UIButton(type: .system) // .system = 기본적인 버튼 스타일
+
+        button.setTitle("경로탐색", for: .normal)
+        button.backgroundColor = .black
+        button.setTitleColor(.white, for: .normal)
+        button.frame = CGRect(x: 100, y: 300, width: 50, height: 50) // 버튼 속성
+
+        button.addTarget(self, action: #selector (findWay), for: .touchUpInside) // 버튼에 연결될 기능
+
+        view.addSubview(button)
+    }
 
 //    func cameraMove() {
 //        var cameraUpdate = NMFCameraUpdate(scrollTo: NMGLatLng(lat: 377.5666102, lng: 126.9783881)) // 카메라 위치 설정

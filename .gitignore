@@ -4,6 +4,7 @@
 *.json
 *.lock
 *.xcuserstate
+*.pbxproj
 
 
 #의존성 파일들 디렉토리: pod install로 설치
@@ -12,7 +13,11 @@ Pods/
 Frameworks/
 
 
-APIKey
+# 자격증명 보관파일
+.env
+Config.plist
+
+
 
 # 필요없는디렉토리/
 # 하위디렉토리/*.필요없는확장자
